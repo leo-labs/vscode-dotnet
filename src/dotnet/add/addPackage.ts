@@ -1,10 +1,13 @@
-import { ExtensionContext, Disposable, window, QuickPickItem, ProgressLocation } from 'vscode';
+import { Disposable, window, QuickPickItem, ProgressLocation } from 'vscode';
 
 import { dotnetAddPackage, dotnetListPackages } from '../../util/execDotnet';
 import { getCsproj } from '../../util/ProjectSelector';
 import { searchAutocompletePackageId, searchAutocompleteVersion } from '../../util/nugetApi';
 
-export async function addPackage(context: ExtensionContext) {
+/**
+ * Interactive Dialog using QuickPick input to install or upgrade a NuGet package
+ */
+export async function addPackage() {
     try {
         const projectPath = await getCsproj();
         const packageId = await searchPackage();
@@ -16,25 +19,34 @@ export async function addPackage(context: ExtensionContext) {
         }, (progress, token) => {
             return dotnetAddPackage(projectPath, packageId, version);
         });
-    } catch(reason) {
-        window.showWarningMessage(reason);
+    } catch(error) {
+        var message: string;
+        if (error instanceof Error) {
+            message = error.message;
+        } else {
+            message = error;
+        }
+        window.showWarningMessage(message);
     };
 }
 
+/**
+ * Interactive Dialog using QuickPick input to choose a NuGet package ID and version
+ */
 async function pickVersion(packageId: string, projectPath: string) {
-    return new Promise<string>((resolve, reject) => {
-        window.showQuickPick(getVersions(packageId, projectPath),
-        { placeHolder: "Choose version"}).then((version) => {
-            if(!version) {
-                reject("No version chosen")
-            } else{ 
-                resolve(version);
-            }
-        });
-    });
+    const version = await window.showQuickPick(getVersions(packageId, projectPath),
+        { placeHolder: "Choose version"});
+    if(!version) {
+        throw new Error("No version chosen")
+    } else{ 
+        return version;
+    }
 }
 
-async function getVersions(packageId: string, projectPath: string) {
+/**
+ * Gets all but the installed versions for a package in a project
+ */
+async function getVersions(packageId: string, projectPath: string) : Promise<string[]> {
     var versions = await searchAutocompleteVersion(packageId);
     const installedPackage = (await dotnetListPackages(projectPath)).filter(el => el.label == packageId);
     if (installedPackage.length == 1) {
@@ -44,8 +56,11 @@ async function getVersions(packageId: string, projectPath: string) {
     return versions;
 }
 
-
-async function searchPackage() {
+/**
+ * Interactive dialog using QuickPick and autocomplete to search the NuGet
+ * package index for packages and obtain the packageId
+ */
+async function searchPackage() : Promise<string> {
     const disposables: Disposable[] = [];
 	try {
 		return new Promise<string>((resolve, reject) => {

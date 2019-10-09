@@ -1,37 +1,45 @@
 import { window, workspace, QuickPickItem, extensions, WorkspaceFolder, Uri } from 'vscode';
-import * as child from 'child_process';
 import * as fs from 'fs';
 import { dotnetSln } from './execDotnet';
 
+/**
+ * Interactive Dialog using QuickPick input to choose a csharp project
+ * from a list of projects
+ */
 export async function getCsproj() : Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        window.showQuickPick(getCsharpProjects(), { placeHolder: "Choose a project"}).then((projects) => {
-            if(!projects) {
-                reject("No project choosen")
-            }
-            resolve(projects);
-        });
-    });
+    const projects = await window.showQuickPick(getCsharpProjects(), { placeHolder: "Choose a project"});
+    if(!projects) {
+        throw new Error("No project choosen")
+    }
+    return projects;
 }
 
+/**
+ * Obtain a list of csharp projects. If there is a solution file (.sln) present,
+ * return the projects in the solution. Else search for a .csproj file in the workspace
+ * directory.
+ */
 async function getCsharpProjects() : Promise<string[]> {
-    return getWorkspace().then((workspace) => {
-        return new Promise((resolve, reject) => {
-            fs.readdir(workspace.uri.path, (error, files) => {
-                const sln_files = files.filter(file => /\.sln$/.test(file));
-                if (sln_files.length == 1) {
-                    resolve(dotnetSln(`${workspace.uri.path}/${sln_files[0]} list`));
-                } else if(sln_files.length == 0) {
-                    const csproj_files = files.filter(file => /\.csproj$/.test(file));
-                    resolve(csproj_files.map((file) => workspace.uri.path + "/" + file));
-                } else {
-                    reject("More than one .sln file in workspace");
-                }
-            });
+    var workspace = await getWorkspace();
+    return new Promise((resolve, reject) => {
+        fs.readdir(workspace.uri.path, (error, files) => {
+            const sln_files = files.filter(file => /\.sln$/.test(file));
+            if (sln_files.length == 1) {
+                resolve(dotnetSln(`${workspace.uri.path}/${sln_files[0]} list`));
+            } else if(sln_files.length == 0) {
+                const csproj_files = files.filter(file => /\.csproj$/.test(file));
+                resolve(csproj_files.map((file) => workspace.uri.path + "/" + file));
+            } else {
+                reject("More than one .sln file in workspace");
+            }
         });
     });
 }
 
+/**
+ * Interactive Dialog using QuickPick input to choose a workspace folder
+ * if multiple workspaces are currently open. Throws an error if no workspace is open.
+ */
 async function getWorkspace() : Promise<WorkspaceFolder> {
     const workspaceFolders = workspace.workspaceFolders;
     if(!workspaceFolders) {
@@ -42,14 +50,11 @@ async function getWorkspace() : Promise<WorkspaceFolder> {
         return workspaceFolders[0];
     }
 
-    return new Promise<WorkspaceFolder>((resolve, reject) => {
-        window.showQuickPick(workspaceFolders.map((folder) => ({label: folder.name, details: folder.uri, index: folder.index})),
-            { placeHolder: "Select workspace"}).then((workspace) => {
-                if(workspace) {
-                    return resolve(workspaceFolders[workspace.index]);
-                }
-                reject("No workspace selected")
-            }
-        );
-    });
+    var workspaceFolder = await window.showQuickPick(workspaceFolders.map((folder) => ({label: folder.name, details: folder.uri, index: folder.index})),
+        { placeHolder: "Select workspace"});
+    if(workspaceFolder) {
+        return workspaceFolders[workspaceFolder.index];
+    }
+    throw new Error("No workspace selected");
+
 }

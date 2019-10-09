@@ -29,7 +29,6 @@ export async function searchAutocompleteVersion(packageId: string) : Promise<str
  * @param query the query
  */
 async function searchAutocomplete(query: string) {
-    return axios.get(NUGET_AUTOCOMPLETE + query + NUGET_AUTOCOMPLETE_PARAM).then((response) => { 
-        return response.data.data;
-    });
+    var response = await axios.get(NUGET_AUTOCOMPLETE + query + NUGET_AUTOCOMPLETE_PARAM);
+    return response.data.data;
 }

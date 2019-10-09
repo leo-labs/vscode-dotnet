@@ -6,10 +6,10 @@ export function activate(context: vscode.ExtensionContext) {
 	
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.dotnet.add.package', 
-		async () => addPackage(context)));
+		async () => addPackage()));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.dotnet.remove.package', 
-		async () => removePackage(context)));
+		async () => removePackage()));
 	
 }
 

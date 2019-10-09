@@ -1,8 +1,12 @@
-import { ExtensionContext, window, ProgressLocation } from "vscode";
+import { window, ProgressLocation } from "vscode";
+
 import { getCsproj } from "../../util/ProjectSelector";
 import { dotnetRemovePackage, dotnetListPackages } from "../../util/execDotnet";
 
-export async function removePackage(context: ExtensionContext) {
+/**
+ * Interactive Dialog using QuickPick input to uninstall a NuGet package
+ */
+export async function removePackage() {
     try {
         const projectPath = await getCsproj();
         const packageId = await selectPackage(projectPath);
@@ -13,20 +17,26 @@ export async function removePackage(context: ExtensionContext) {
         }, (progress, token) => {
             return dotnetRemovePackage(projectPath, packageId);
         });
-    } catch(reason) {
-        window.showWarningMessage(reason);
+    } catch(error) {
+        var message: string;
+        if (error instanceof Error) {
+            message = error.message;
+        } else {
+            message = error;
+        }
+        window.showWarningMessage(message);
     };
 }
 
+/**
+ * Interactive Dialog using QuickPick input choose a package from a list of installed packages
+ */
 async function selectPackage(projectPath: string) : Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        window.showQuickPick(dotnetListPackages(projectPath),
-        { placeHolder: "Select Package to remove"}).then((packageId) => {
-            if(!packageId) {
-                reject("No package chosen")
-            } else {
-                resolve(packageId.label);
-            }
-        });
-    });
+    const packageId = await window.showQuickPick(dotnetListPackages(projectPath),
+        { placeHolder: "Select Package to remove"});
+    if(!packageId) {
+        throw new Error("No package chosen")
+    } else {
+        return packageId.label;
+    }
 }

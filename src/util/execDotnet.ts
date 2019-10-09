@@ -4,9 +4,8 @@ import * as child from 'child_process';
  * Runs `dotnet sln <command>` to list projects referenced by the solution
  */
 export async function dotnetSln(command: string) : Promise<string[]> {
-    return execDotnet(`sln ${command}`).then((output) => {
-        return output.slice(2, -1);
-    });
+    const output = await execDotnet(`sln ${command}`);
+    return output.slice(2, -1);
 }
 
 /**
@@ -16,12 +15,13 @@ export async function dotnetSln(command: string) : Promise<string[]> {
  * https://github.com/NuGet/Home/issues/7752 will make this more stable
  */
 export async function dotnetListPackages(projectPath: string) {
-    return execDotnet(`list ${projectPath} package`).then((output) => {
-        return output.filter(el => el.includes(">")).map(el => {
-            const columns = el.split(/\s+/);
-            return ({ label: columns[2], details: columns.slice(-2)[0]});
-        });
-    });    
+    const output = await execDotnet(`list ${projectPath} package`);
+    // lines with packages start with '>'
+    return output.filter(el => el.includes(">")).map(el => {
+        // split by whitespaces into columns
+        const columns = el.split(/\s+/);
+        return ({ label: columns[2], details: columns.slice(-2)[0]});
+    });
 }
 
 /**
