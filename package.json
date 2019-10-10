@@ -3,6 +3,12 @@
 	"displayName": "dotnet",
 	"description": "A modern wrapper around dotnet cli",
 	"version": "0.0.1",
+	"publisher": "leo-labs",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/leo-labs/vscode-dotnet"
+	},
 	"engines": {
 		"vscode": "^1.38.0"
 	},
