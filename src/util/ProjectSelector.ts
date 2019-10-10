@@ -23,12 +23,17 @@ async function getCsharpProjects() : Promise<string[]> {
     var workspace = await getWorkspace();
     return new Promise((resolve, reject) => {
         fs.readdir(workspace.uri.path, (error, files) => {
+            let absolutePath = function(file: string) : string { 
+                return workspace.uri.path + "/" + file;
+            };
             const sln_files = files.filter(file => /\.sln$/.test(file));
             if (sln_files.length == 1) {
-                resolve(dotnetSln(`${workspace.uri.path}/${sln_files[0]} list`));
+                return dotnetSln(absolutePath(sln_files[0]) + " list").then((projects) => {
+                    resolve(projects.map((project) => absolutePath(project)));
+                });
             } else if(sln_files.length == 0) {
                 const csproj_files = files.filter(file => /\.csproj$/.test(file));
-                resolve(csproj_files.map((file) => workspace.uri.path + "/" + file));
+                resolve(csproj_files.map((file) => absolutePath(file)));
             } else {
                 reject("More than one .sln file in workspace");
             }
