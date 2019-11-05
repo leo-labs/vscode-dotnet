@@ -15,6 +15,13 @@
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		".NET Core",
+		"nuget",
+		"csharp",
+		"c#",
+		"dotnet"
+	],
 	"activationEvents": [
 		"onCommand:extension.dotnet.add.package",
 		"onCommand:extension.dotnet.remove.package",
