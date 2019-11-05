@@ -8,26 +8,16 @@ import { searchAutocompletePackageId, searchAutocompleteVersion } from '../../ut
  * Interactive Dialog using QuickPick input to install or upgrade a NuGet package
  */
 export async function addPackage() {
-    try {
-        const projectPath = await getCsproj();
-        const packageId = await searchPackage();
-        const version = await pickVersion(packageId, projectPath);
-        return await window.withProgress({
-            location: ProgressLocation.Notification,
-            title: `Install package ${packageId}`,
-            cancellable: false
-        }, (progress, token) => {
-            return dotnetAddPackage(projectPath, packageId, version);
-        });
-    } catch(error) {
-        var message: string;
-        if (error instanceof Error) {
-            message = error.message;
-        } else {
-            message = error;
-        }
-        window.showWarningMessage(message);
-    };
+    const projectPath = await getCsproj();
+    const packageId = await searchPackage();
+    const version = await pickVersion(packageId, projectPath);
+    return window.withProgress({
+        location: ProgressLocation.Notification,
+        title: `Install package ${packageId}`,
+        cancellable: false
+    }, (progress, token) => {
+        return dotnetAddPackage(projectPath, packageId, version);
+    });
 }
 
 /**

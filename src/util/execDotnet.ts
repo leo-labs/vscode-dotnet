@@ -1,11 +1,25 @@
 import * as child from 'child_process';
 
 /**
- * Runs `dotnet sln <command>` to list projects referenced by the solution
+ * Runs `dotnet sln <solutionPath> list` to list projects referenced by the solution
  */
-export async function dotnetSln(command: string) : Promise<string[]> {
-    const output = await execDotnet(`sln ${command}`);
+export async function dotnetSlnList(solutionPath: string) : Promise<string[]> {
+    const output = await execDotnet(`sln "${solutionPath}" list`);
     return output.slice(2, -1);
+}
+
+/**
+ * Runs `dotnet sln <solutionPath> add <projectPath>` to add a project to the solution
+ */
+export async function dotnetSlnAdd(solutionPath: string, projectPath: string) {
+    return execDotnet(`sln "${solutionPath}" add "${projectPath}"`);
+}
+
+/**
+ * Runs `dotnet sln <solutionPath> remove <projectPath>` to remove a project from the solution
+ */
+export async function dotnetSlnRemove(solutionPath: string, projectPath: string) {
+    return execDotnet(`sln "${solutionPath}" remove "${projectPath}"`);
 }
 
 /**
@@ -25,12 +39,22 @@ export async function dotnetListPackages(projectPath: string) {
 }
 
 /**
+ * List dotnet references in csharp project, runs 
+ * Run `dotnet list <projectPath> reference` and parses
+ * the output. 
+*/
+export async function dotnetListReferences(projectPath: string) {
+    const output = await execDotnet(`list ${projectPath} reference`);
+    return output.slice(2, -1);
+}
+
+/**
  * Install NuGet package into project.
  * 
  * Runs `dotnet add <projectPath> package <packageId> -v <version>`  
  */
 export async function dotnetAddPackage(projectPath: string, packageId: string, version: string) {
-    execDotnet(`add "${projectPath}" package ${packageId} -v ${version}`);
+    return execDotnet(`add "${projectPath}" package ${packageId} -v ${version}`);
 }
 
 /**
@@ -39,7 +63,25 @@ export async function dotnetAddPackage(projectPath: string, packageId: string, v
  * Runs `dotnet remove <projectPath> package <packageId>`  
  */
 export async function dotnetRemovePackage(projectPath: string, packageId: string) {
-    execDotnet(`remove "${projectPath}" package ${packageId}`);
+    return execDotnet(`remove "${projectPath}" package ${packageId}`);
+}
+
+/**
+ * Add a project-to-project reference to a project
+ * 
+ * Runs `dotnet add <projectPath> reference <projectPath>`  
+ */ 
+export async function dotnetAddReference(projectPath: string, referenceProjectPath: string) {
+    return execDotnet(`add "${projectPath}" reference "${referenceProjectPath}"`);
+}
+
+/**
+ * Remove a project-to-project reference from the project.
+ * 
+ * Runs `dotnet remove <projectPath> reference <projectPath>`
+ */
+export async function dotnetRemoveReference(projectPath: string, referenceProjectPath: string) {
+    return execDotnet(`remove "${projectPath}" reference "${referenceProjectPath}"`);
 }
 
 /**
