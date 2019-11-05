@@ -4,7 +4,7 @@ import { window, ProgressLocation } from "vscode";
 import * as path from 'path';
 
 /**
- * Interactive Dialog using QuickPick input to remove a project reference from a solution
+ * Interactive Dialog using QuickPick input to remove a project from a solution
  */
 export async function removeProject() {
     const workspacePath = await getWorkspace();
