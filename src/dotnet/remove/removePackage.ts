@@ -1,31 +1,21 @@
 import { window, ProgressLocation } from "vscode";
 
-import { getCsproj } from "../../util/ProjectSelector";
+import { selectProject, getCsprojects } from "../../util/ProjectSelector";
 import { dotnetRemovePackage, dotnetListPackages } from "../../util/execDotnet";
 
 /**
  * Interactive Dialog using QuickPick input to uninstall a NuGet package
  */
 export async function removePackage() {
-    try {
-        const projectPath = await getCsproj();
-        const packageId = await selectPackage(projectPath);
-        return await window.withProgress({
-            location: ProgressLocation.Notification,
-            title: `Install package ${packageId}`,
-            cancellable: false
-        }, (progress, token) => {
-            return dotnetRemovePackage(projectPath, packageId);
-        });
-    } catch(error) {
-        var message: string;
-        if (error instanceof Error) {
-            message = error.message;
-        } else {
-            message = error;
-        }
-        window.showWarningMessage(message);
-    };
+    const projectPath = await selectProject(getCsprojects());
+    const packageId = await selectPackage(projectPath);
+    return window.withProgress({
+        location: ProgressLocation.Notification,
+        title: `Install package ${packageId}`,
+        cancellable: false
+    }, (progress, token) => {
+        return dotnetRemovePackage(projectPath, packageId);
+    });
 }
 
 /**

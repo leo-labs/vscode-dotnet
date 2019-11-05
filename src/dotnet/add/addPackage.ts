@@ -1,33 +1,23 @@
 import { Disposable, window, QuickPickItem, ProgressLocation } from 'vscode';
 
 import { dotnetAddPackage, dotnetListPackages } from '../../util/execDotnet';
-import { getCsproj } from '../../util/ProjectSelector';
+import { selectProject, getCsprojects } from '../../util/ProjectSelector';
 import { searchAutocompletePackageId, searchAutocompleteVersion } from '../../util/nugetApi';
 
 /**
  * Interactive Dialog using QuickPick input to install or upgrade a NuGet package
  */
 export async function addPackage() {
-    try {
-        const projectPath = await getCsproj();
-        const packageId = await searchPackage();
-        const version = await pickVersion(packageId, projectPath);
-        return await window.withProgress({
-            location: ProgressLocation.Notification,
-            title: `Install package ${packageId}`,
-            cancellable: false
-        }, (progress, token) => {
-            return dotnetAddPackage(projectPath, packageId, version);
-        });
-    } catch(error) {
-        var message: string;
-        if (error instanceof Error) {
-            message = error.message;
-        } else {
-            message = error;
-        }
-        window.showWarningMessage(message);
-    };
+    const projectPath = await selectProject(getCsprojects());
+    const packageId = await searchPackage();
+    const version = await pickVersion(packageId, projectPath);
+    return window.withProgress({
+        location: ProgressLocation.Notification,
+        title: `Install package ${packageId}`,
+        cancellable: false
+    }, (progress, token) => {
+        return dotnetAddPackage(projectPath, packageId, version);
+    });
 }
 
 /**
