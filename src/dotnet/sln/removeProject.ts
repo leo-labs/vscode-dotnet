@@ -1,4 +1,4 @@
-import { getSolution, getWorkspace } from "../../util/ProjectSelector";
+import { getSolution, getWorkspace, selectProject } from "../../util/ProjectSelector";
 import { dotnetSlnList, dotnetSlnRemove } from "../../util/execDotnet";
 import { window, ProgressLocation } from "vscode";
 import * as path from 'path';
@@ -9,7 +9,7 @@ import * as path from 'path';
 export async function removeProject() {
     const workspacePath = await getWorkspace();
     const solutionPath = await getSolution(workspacePath, true);
-    const referenceProjectPathRelative = await selectReference(solutionPath);
+    const referenceProjectPathRelative = await selectProject(dotnetSlnList(solutionPath));
     const referenceProjectPathAbsolute = path.dirname(solutionPath) + "/" + referenceProjectPathRelative;
     return window.withProgress({
         location: ProgressLocation.Notification,
@@ -18,18 +18,4 @@ export async function removeProject() {
     }, (progress, token) => {
         return dotnetSlnRemove(solutionPath, referenceProjectPathAbsolute);
     });
-}
-
-
-/**
- * Interactive Dialog using QuickPick input choose a reference from a list of used project references.
- */
-async function selectReference(solutionPath: string) : Promise<string> {
-    const reference = await window.showQuickPick(dotnetSlnList(solutionPath),
-        { placeHolder: "Select Reference to remove"});
-    if(!reference) {
-        throw new Error("No reference chosen")
-    } else {
-        return reference;
-    }
 }

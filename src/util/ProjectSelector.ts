@@ -1,17 +1,37 @@
-import { window, workspace, WorkspaceFolder, OpenDialogOptions, RelativePattern, Uri } from 'vscode';
+import { window, workspace, OpenDialogOptions, RelativePattern, QuickPickItem } from 'vscode';
 import { dotnetSlnList } from './execDotnet';
 import * as path from 'path';
 
 /**
- * Interactive Dialog using QuickPick input to choose a csharp project
- * from a list of projects
+ * A QuickPickItem that holds information about a csharp project
  */
-export async function getCsproj() : Promise<string> {
-    const projects = await window.showQuickPick(getCsharpProjects(), { placeHolder: "Choose a project"});
-    if(!projects) {
-        throw new Error("No project choosen")
+export class ProjectQuickPickItem implements QuickPickItem {
+    projectFile: string;
+    fsPath: string;
+
+    get label(): string {
+        return this.projectFile;
+    };
+
+    get description(): string {
+        return this.fsPath;
     }
-    return projects;
+
+    constructor(fsPath: string) {
+        console.log(fsPath);
+        this.projectFile = path.win32.basename(fsPath);
+        console.log(this.projectFile);
+        this.fsPath = fsPath;
+    }
+}
+
+/**
+ * Interactive Dialog using QuickPick input to choose a csharp project from a list of filepaths to projects
+ */
+export async function selectProject(projects: Promise<string[]>) : Promise<string> {
+    const projectItems = projects.then((projects) => projects.map((p) => new ProjectQuickPickItem(p)));
+    const projectItem = await selectProjectItem(projectItems);
+    return projectItem.fsPath;
 }
 
 /**
@@ -19,7 +39,7 @@ export async function getCsproj() : Promise<string> {
  * return the projects in the solution. Else search for a .csproj file in the workspace
  * directory.
  */
-async function getCsharpProjects() : Promise<string[]> {
+export async function getCsprojects() : Promise<string[]> {
     const workspacePath = await getWorkspace();
     var solutionPath = await getSolution(workspacePath, false);
     if (solutionPath !== "") {
@@ -28,9 +48,10 @@ async function getCsharpProjects() : Promise<string[]> {
     } else {
         const pattern = new RelativePattern(workspacePath, '**/*.csproj');
         const csproj_files = await workspace.findFiles(pattern, null);
-        return csproj_files.map((uri) => uri.path);    
+        return csproj_files.map((uri) => uri.fsPath);
     }
 }
+
 /**
  * Get path to solution file in workspace
  * @param throwIfNone throw an error if none is found or instead an empty string
@@ -89,4 +110,17 @@ export async function getCsprojFromFileSystem() : Promise<string> {
         throw new Error("Please select a project to add as a reference.")
     }
     return fileUri[0].fsPath;
+}
+
+/**
+ * Interactive Dialog using QuickPick input choose a project from a list of projectquickpickitems
+ */
+async function selectProjectItem(items: Promise<ProjectQuickPickItem[]>) : Promise<ProjectQuickPickItem> {
+    const projectItem = await window.showQuickPick(items,
+        { placeHolder: "Select Project"});
+    if(!projectItem) {
+        throw new Error("No project chosen")
+    } else {
+        return projectItem;
+    }
 }
