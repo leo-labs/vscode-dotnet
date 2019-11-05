@@ -18,9 +18,7 @@ export class ProjectQuickPickItem implements QuickPickItem {
     }
 
     constructor(fsPath: string) {
-        console.log(fsPath);
         this.projectFile = path.win32.basename(fsPath);
-        console.log(this.projectFile);
         this.fsPath = fsPath;
     }
 }
