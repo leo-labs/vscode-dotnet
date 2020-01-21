@@ -5,6 +5,7 @@
 	"version": "0.0.3",
 	"publisher": "leo-labs",
 	"license": "MIT",
+	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/leo-labs/vscode-dotnet"
