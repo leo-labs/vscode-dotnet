@@ -11,7 +11,7 @@ export async function removePackage() {
     const packageId = await selectPackage(projectPath);
     return window.withProgress({
         location: ProgressLocation.Notification,
-        title: `Install package ${packageId}`,
+        title: `Removing package ${packageId}`,
         cancellable: false
     }, (progress, token) => {
         return dotnetRemovePackage(projectPath, packageId);

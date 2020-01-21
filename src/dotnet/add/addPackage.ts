@@ -13,7 +13,7 @@ export async function addPackage() {
     const version = await pickVersion(packageId, projectPath);
     return window.withProgress({
         location: ProgressLocation.Notification,
-        title: `Install package ${packageId}`,
+        title: `Adding package ${packageId}`,
         cancellable: false
     }, (progress, token) => {
         return dotnetAddPackage(projectPath, packageId, version);
