@@ -2,7 +2,7 @@
 	"name": "dotnet",
 	"displayName": "dotnet",
 	"description": "A modern wrapper around dotnet cli",
-	"version": "0.0.3",
+	"version": "1.0.0",
 	"publisher": "leo-labs",
 	"license": "MIT",
 	"icon": "images/icon.png",
