@@ -1,4 +1,4 @@
-# dotne, A Visual Studio Code extension
+# dotnet, A Visual Studio Code extension
 
 A modern interface to the dotnet cli for Visual Studio Code.
 
