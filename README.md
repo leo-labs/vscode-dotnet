@@ -1,4 +1,4 @@
-[![VS Marketplace Installs](https://vsmarketplacebadge.apphb.com/installs/leo-labs.dotnet.svg)](https://marketplace.visualstudio.com/items?itemName=leo-labs.dotnet.svg)
+[![VS Marketplace Installs](https://vsmarketplacebadge.apphb.com/installs/leo-labs.dotnet.svg)](https://marketplace.visualstudio.com/items?itemName=leo-labs.dotnet)
 [![GitHub license](https://img.shields.io/github/license/leo-labs/vscode-dotnet.svg)](https://github.com/matijarmk/dotnet-core-commands/blob/master/LICENSE)
 
 # dotnet, A Visual Studio Code extension
@@ -14,7 +14,7 @@ This extension provides access to the dotnet cli by using the Quick Pick UI.
 
 ## Features
 
-* Create dotnet objects like prokects, solutions from templates (`dotnet new`)
+* Create dotnet objects like projects, solutions from templates (`dotnet new`)
 
 ![Create solution](images/demo/demo_new_solution.gif)
 
