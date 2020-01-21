@@ -1,3 +1,6 @@
+[![VS Marketplace Installs](https://vsmarketplacebadge.apphb.com/installs/leo-labs.dotnet.svg)](https://marketplace.visualstudio.com/items?itemName=leo-labs.dotnet.svg)
+[![GitHub license](https://img.shields.io/github/license/leo-labs/vscode-dotnet.svg)](https://github.com/matijarmk/dotnet-core-commands/blob/master/LICENSE)
+
 # dotnet, A Visual Studio Code extension
 
 A modern interface to the dotnet cli for Visual Studio Code.
