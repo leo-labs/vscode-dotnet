@@ -40,7 +40,7 @@ async function getVersions(packageId: string, projectPath: string) : Promise<str
     var versions = await searchAutocompleteVersion(packageId);
     const installedPackage = (await dotnetListPackages(projectPath)).filter(el => el.label == packageId);
     if (installedPackage.length == 1) {
-        const installedVersion = installedPackage[0].details;
+        const installedVersion = installedPackage[0].description;
         versions = versions.filter(v => v != installedVersion);
     }
     return versions;

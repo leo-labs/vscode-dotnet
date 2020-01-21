@@ -1,4 +1,5 @@
-import * as child from 'child_process';
+import { Template } from '../dotnet/new/new';
+import { exec, spawn } from 'promisify-child-process';
 
 /**
  * Runs `dotnet sln <solutionPath> list` to list projects referenced by the solution
@@ -34,7 +35,7 @@ export async function dotnetListPackages(projectPath: string) {
     return output.filter(el => el.includes(">")).map(el => {
         // split by whitespaces into columns
         const columns = el.split(/\s+/);
-        return ({ label: columns[2], details: columns.slice(-2)[0]});
+        return ({ label: columns[2], description: columns.slice(-2)[0]});
     });
 }
 
@@ -85,9 +86,41 @@ export async function dotnetRemoveReference(projectPath: string, referenceProjec
 }
 
 /**
+ * Retrieve list of templates that can be used with the dotnet new command
+ * 
+ * Runs `dotnet new --list`
+ */
+export async function dotnetNewList() {
+    const output = await execDotnet("new --list");
+    var index = output.findIndex(el => el.startsWith("------------------"));
+    return output.slice(index + 1, -1)
+        // filter out empty lines from output
+        .filter(el => el != "")
+        .map((el) => {
+            // split by at least 3 whitespaces into columns
+            const columns = el.split(/\s\s\s+/);
+            return new Template(columns[0], columns[1], columns[2]);
+    });
+}
+
+/**
+ * Creates new item from given template
+ * 
+ * Runs `dotnet new <template> -n <name> -o <output>`
+ */
+export async function dotnetNew(template: string, name: string, output: string) {
+    return execDotnet(`new "${template}" -n "${name}" -o "${output}"`);
+}
+
+/**
  * Executes the dotnet command and returns the stdout separated by line
  * @param command subcommand and arguments
  */
 async function execDotnet(command: string) : Promise<string[]> {
-    return child.execSync(`dotnet ${command}`, {encoding: 'utf8'}).split(/\r?\n/);
+    const { stdout, stderr } = await exec(`dotnet ${command}`);
+    if(stdout) {
+        return stdout.toString('utf8').split(/\r?\n/);
+    } else {
+        return [];
+    }
 }

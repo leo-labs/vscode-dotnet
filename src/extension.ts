@@ -5,6 +5,7 @@ import { addReference } from './dotnet/add/addReference';
 import { removeReference } from './dotnet/remove/removeReference';
 import { addProject } from './dotnet/sln/addProject';
 import { removeProject } from './dotnet/sln/removeProject';
+import { newFromTemplate } from './dotnet/new/new';
 
 export function activate(context: vscode.ExtensionContext) {
 	
@@ -25,6 +26,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.dotnet.sln.remove', 
 		async () => runAndshowErrorAsMessage(removeProject)));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.dotnet.new', 
+		async () => runAndshowErrorAsMessage(newFromTemplate)));
 }
 
 // this method is called when your extension is deactivated

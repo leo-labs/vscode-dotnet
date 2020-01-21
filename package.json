@@ -28,7 +28,8 @@
 		"onCommand:extension.dotnet.add.reference",
 		"onCommand:extension.dotnet.remove.reference",
 		"onCommand:extension.dotnet.sln.add",
-		"onCommand:extension.dotnet.sln.remove"
+		"onCommand:extension.dotnet.sln.remove",
+		"onCommand:extension.dotnet.new"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -56,6 +57,10 @@
 			{
 				"command": "extension.dotnet.sln.remove",
 				"title": "dotnet sln remove"
+			},
+			{
+				"command": "extension.dotnet.new",
+				"title": "dotnet new"
 			}
 		]
 	},
@@ -79,7 +84,7 @@
 	},
 	"dependencies": {
 		"axios": "^0.19.0",
-		"child_process": "^1.0.2",
-		"path": "^0.12.7"
+		"path": "^0.12.7",
+		"promisify-child-process": "^3.1.3"
 	}
 }
