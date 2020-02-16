@@ -64,7 +64,9 @@ export async function dotnetAddPackage(projectPath: string, packageId: string, v
  * Runs `dotnet remove <projectPath> package <packageId>`  
  */
 export async function dotnetRemovePackage(projectPath: string, packageId: string) {
-    return execDotnet(`remove "${projectPath}" package ${packageId}`);
+    return execDotnet(`remove "${projectPath}" package ${packageId}`).then(() =>
+        execDotnet(`restore "${projectPath}"`)
+    );
 }
 
 /**
