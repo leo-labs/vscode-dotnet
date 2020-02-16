@@ -117,10 +117,14 @@ export async function dotnetNew(template: string, name: string, output: string) 
  * @param command subcommand and arguments
  */
 async function execDotnet(command: string) : Promise<string[]> {
-    const { stdout, stderr } = await exec(`dotnet ${command}`);
-    if(stdout) {
-        return stdout.toString('utf8').split(/\r?\n/);
-    } else {
-        return [];
+    try {
+        const { stdout, stderr } = await exec(`dotnet ${command}`);
+        if(stdout) {
+            return stdout.toString('utf8').split(/\r?\n/);
+        } else {
+            return [];
+        }
+    } catch(e) {
+        throw e.message + e.stdout;
     }
 }
