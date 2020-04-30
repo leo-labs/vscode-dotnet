@@ -51,7 +51,7 @@ export async function newFromTemplate() {
         cancellable: false
     },     
     async (progress, token): Promise<string[]> => {
-        var resultNew = await dotnetNew(template.shortName, name, outputDirectory.path);
+        var resultNew = await dotnetNew(template.shortName, name, outputDirectory.fsPath);
         if(addToSolution){
             const pattern = new RelativePattern(outputDirectory.path, '**/*.csproj');
             const csproj_files = await workspace.findFiles(pattern, null);
