@@ -58,7 +58,7 @@ export async function newFromTemplate() {
             if (csproj_files.length != 1) {
                 throw new Error("Could not add project to solution.")
             }
-            const resultAdd = dotnetSlnAdd(solution, csproj_files[0].path);
+            const resultAdd = dotnetSlnAdd(solution, csproj_files[0].fsPath);
             return Promise.all([resultNew, resultAdd]).then((values) => {
                 return values[0].concat(...values.slice(1))});
         } else if(template.isProject || template.isSolution) {

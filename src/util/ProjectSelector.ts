@@ -59,7 +59,7 @@ export async function getSolution(workspacePath: string, throwIfNone: boolean) :
     const sln_result = await workspace.findFiles(pattern, null, 2);
 
     if(sln_result.length == 1) {
-        return sln_result[0].path;
+        return sln_result[0].fsPath;
     } else if (sln_result.length == 0) {
         if (throwIfNone) {
             throw new Error("No solution file in workspace.");
@@ -81,13 +81,13 @@ export async function getWorkspace() : Promise<string> {
     }
 
     if(workspaceFolders.length == 1) {
-        return workspaceFolders[0].uri.path;
+        return workspaceFolders[0].uri.fsPath;
     }
 
     const workspaceFolder = await window.showQuickPick(workspaceFolders.map((folder) => ({label: folder.name, details: folder.uri, index: folder.index})),
         { placeHolder: "Select workspace"});
     if(workspaceFolder) {
-        return workspaceFolders[workspaceFolder.index].uri.path;
+        return workspaceFolders[workspaceFolder.index].uri.fsPath;
     }
     throw new Error("No workspace selected");
 }
