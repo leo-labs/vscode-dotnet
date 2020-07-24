@@ -1,8 +1,12 @@
+
 import { Disposable, window, QuickPickItem, ProgressLocation } from 'vscode';
 
 import { dotnetAddPackage, dotnetListPackages } from '../../util/execDotnet';
 import { selectProject, getCsprojects } from '../../util/ProjectSelector';
 import { searchAutocompletePackageId, searchAutocompleteVersion } from '../../util/nugetApi';
+import { CreatePackageQuickPickItem, PackageQuickPickItem } from '../add/PackageQuickPickItem';
+import debounce = require('lodash.debounce');
+import difference = require('lodash.difference');
 
 /**
  * Interactive Dialog using QuickPick input to install or upgrade a NuGet package
@@ -52,6 +56,8 @@ async function getVersions(packageId: string, projectPath: string) : Promise<str
  */
 async function searchPackage() : Promise<string> {
     const disposables: Disposable[] = [];
+    var debouncedLoaderMetadata: any;
+    var debouncedLoaderAutoComplete: any;
 	try {
 		return new Promise<string>((resolve, reject) => {
             const disposables: Disposable[] = [];
@@ -60,29 +66,53 @@ async function searchPackage() : Promise<string> {
             input.placeholder = "Search Nuget Package";
             disposables.push(
                 input.onDidChangeValue(async (value) => {
-                    if (!value) {
-                        input.items = [];
-                        return;
+                    if(debouncedLoaderAutoComplete) {
+                        debouncedLoaderAutoComplete.cancel();
+                        if(debouncedLoaderMetadata) {
+                            debouncedLoaderMetadata.cancel();
+                        }
                     }
-                    input.busy = true;
-                    try {
-                        const packageIds = await searchAutocompletePackageId(value);
-                        input.items = packageIds.map((packageId: string) => ({label: packageId}));
-                        input.busy = false;
-                    } catch(reason) {
-                        input.busy = false;
-                        reject("Error while fetching the nuget API: " + reason.message);
-                    }
+                    debouncedLoaderAutoComplete = debounce(async () => {
+                        if(debouncedLoaderMetadata) {
+                            debouncedLoaderMetadata.cancel();
+                        }
+                        if (!value) {
+                            input.items = [];
+                            return;
+                        }
+                        input.busy = true;
+                        try {
+                            const packageIds = await searchAutocompletePackageId(value);
+                            input.items = packageIds.map((packageId: string) => ({label: packageId}));
+                        } catch(reason) {
+                            input.busy = false;
+                            reject("Error while fetching the nuget API: " + reason.message);
+                        }
+                        
+                        debouncedLoaderMetadata = debounce(async () => {
+                            var packageIds = input.items.map(item => item.label);
+                            const detailedItems = await loadPackageMetadata(packageIds);
+
+                            // only update if the filter has not changed in between
+                            if (difference(packageIds, input.items.map(item => item.label)).length === 0) {
+                                input.items = detailedItems;
+                                input.activeItems = detailedItems.filter(item => item.label == input.activeItems[0].label);
+                                input.busy = false;
+                            }
+                        }, 250);
+                        debouncedLoaderMetadata();
+                    }, 250);
+                    debouncedLoaderAutoComplete();
                 }),
                 input.onDidChangeSelection(items => {
-					const item = items[0];
+                    const item = items[0];
                     resolve(item.label);
                     input.hide();
                 }),
                 input.onDidHide(() => {
-					reject("No package chosen");
-					input.dispose();
-				})
+                    reject("No package chosen");
+                    input.dispose();
+                })
             );
             input.show();
 		});
@@ -90,3 +120,12 @@ async function searchPackage() : Promise<string> {
 		disposables.forEach(d => d.dispose());
     }
 }
+
+/**
+ * load package metadata as `PackageQuickPickItem`
+ */
+async function loadPackageMetadata(packageIds: readonly string[]) {
+    return await Promise.all(packageIds.map(async packageId => {
+        return await CreatePackageQuickPickItem(packageId);
+    }));
+} 
