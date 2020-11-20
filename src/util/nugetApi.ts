@@ -12,7 +12,7 @@ const NUGET_SEARCH_PARAM = "&take=1&prerelease=false&semVerLevel=2.0.0";
  * Includes prerelease packages
  * @param q search term for package identifier
  */
-export async function searchAutocompletePackageId(q: string) : Promise<string[]> {
+export async function searchAutocompletePackageId(q: string): Promise<string[]> {
     const query = `q=${q}`;
     return searchAutocomplete(query);
 }
@@ -22,7 +22,7 @@ export async function searchAutocompletePackageId(q: string) : Promise<string[]>
  * the package information via the `SearchQueryService` 
  * @param packageId The package identifier
  */
-export async function searchAutocompleteVersion(packageId: string) : Promise<string[]> {
+export async function searchAutocompleteVersion(packageId: string): Promise<string[]> {
     const query = `id=${packageId}`;
     return searchAutocomplete(query).then((versions) => versions.reverse());
 }
@@ -53,12 +53,12 @@ export class PackageMetadata {
  */
 export async function queryPackageMetadata(packageId: string) {
     var response = await axios.get(NUGET_SEARCH + "PackageId:" + packageId + NUGET_SEARCH_PARAM);
-    if(response.data.data.length == 0) {
+    if (response.data.data.length == 0) {
         return new PackageMetadata();
     };
 
     var data = response.data.data[0];
 
-    return new PackageMetadata(data.verified, data.versions.slice(-1)[0].version, data.description, 
+    return new PackageMetadata(data.verified, data.versions.slice(-1)[0].version, data.description,
         data.authors, data.totalDownloads);
 }

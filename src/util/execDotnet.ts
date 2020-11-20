@@ -4,23 +4,23 @@ import { exec, spawn } from 'promisify-child-process';
 /**
  * Runs `dotnet sln <solutionPath> list` to list projects referenced by the solution
  */
-export async function dotnetSlnList(solutionPath: string) : Promise<string[]> {
-	const output = await execDotnet(`sln "${solutionPath}" list`);
-	return output.slice(2, -1);
+export async function dotnetSlnList(solutionPath: string): Promise<string[]> {
+    const output = await execDotnet(`sln "${solutionPath}" list`);
+    return output.slice(2, -1);
 }
 
 /**
  * Runs `dotnet sln <solutionPath> add <projectPath>` to add a project to the solution
  */
 export async function dotnetSlnAdd(solutionPath: string, projectPath: string) {
-	return execDotnet(`sln "${solutionPath}" add "${projectPath}"`);
+    return execDotnet(`sln "${solutionPath}" add "${projectPath}"`);
 }
 
 /**
  * Runs `dotnet sln <solutionPath> remove <projectPath>` to remove a project from the solution
  */
 export async function dotnetSlnRemove(solutionPath: string, projectPath: string) {
-	return execDotnet(`sln "${solutionPath}" remove "${projectPath}"`);
+    return execDotnet(`sln "${solutionPath}" remove "${projectPath}"`);
 }
 
 /**
@@ -30,13 +30,13 @@ export async function dotnetSlnRemove(solutionPath: string, projectPath: string)
  * https://github.com/NuGet/Home/issues/7752 will make this more stable
  */
 export async function dotnetListPackages(projectPath: string) {
-	const output = await execDotnet(`list ${projectPath} package`);
-	// lines with packages start with '>'
-	return output.filter(el => el.includes(">")).map(el => {
-		// split by whitespaces into columns
-		const columns = el.split(/\s+/);
-		return ({ label: columns[2], description: columns.slice(-2)[0]});
-	});
+    const output = await execDotnet(`list ${projectPath} package`);
+    // lines with packages start with '>'
+    return output.filter(el => el.includes(">")).map(el => {
+        // split by whitespaces into columns
+        const columns = el.split(/\s+/);
+        return ({ label: columns[2], description: columns.slice(-2)[0] });
+    });
 }
 
 /**
@@ -45,8 +45,8 @@ export async function dotnetListPackages(projectPath: string) {
  * the output. 
 */
 export async function dotnetListReferences(projectPath: string) {
-	const output = await execDotnet(`list ${projectPath} reference`);
-	return output.slice(2, -1);
+    const output = await execDotnet(`list ${projectPath} reference`);
+    return output.slice(2, -1);
 }
 
 /**
@@ -55,7 +55,7 @@ export async function dotnetListReferences(projectPath: string) {
  * Runs `dotnet add <projectPath> package <packageId> -v <version>`  
  */
 export async function dotnetAddPackage(projectPath: string, packageId: string, version: string) {
-	return execDotnet(`add "${projectPath}" package ${packageId} -v ${version}`);
+    return execDotnet(`add "${projectPath}" package ${packageId} -v ${version}`);
 }
 
 /**
@@ -64,9 +64,9 @@ export async function dotnetAddPackage(projectPath: string, packageId: string, v
  * Runs `dotnet remove <projectPath> package <packageId>`  
  */
 export async function dotnetRemovePackage(projectPath: string, packageId: string) {
-	return execDotnet(`remove "${projectPath}" package ${packageId}`).then(() =>
-		execDotnet(`restore "${projectPath}"`)
-	);
+    return execDotnet(`remove "${projectPath}" package ${packageId}`).then(() =>
+        execDotnet(`restore "${projectPath}"`)
+    );
 }
 
 /**
@@ -75,7 +75,7 @@ export async function dotnetRemovePackage(projectPath: string, packageId: string
  * Runs `dotnet add <projectPath> reference <projectPath>`  
  */
 export async function dotnetAddReference(projectPath: string, referenceProjectPath: string) {
-	return execDotnet(`add "${projectPath}" reference "${referenceProjectPath}"`);
+    return execDotnet(`add "${projectPath}" reference "${referenceProjectPath}"`);
 }
 
 /**
@@ -84,7 +84,7 @@ export async function dotnetAddReference(projectPath: string, referenceProjectPa
  * Runs `dotnet remove <projectPath> reference <projectPath>`
  */
 export async function dotnetRemoveReference(projectPath: string, referenceProjectPath: string) {
-	return execDotnet(`remove "${projectPath}" reference "${referenceProjectPath}"`);
+    return execDotnet(`remove "${projectPath}" reference "${referenceProjectPath}"`);
 }
 
 /**
@@ -93,7 +93,7 @@ export async function dotnetRemoveReference(projectPath: string, referenceProjec
  * Runs `dotnet ef migration add <migrationname> -p <projectPath>`
  */
 export async function dotnetEfAddMigration(projectPath: string, migrationname: string) {
-	return execDotnet(`ef migrations add "${migrationname}" -p "${projectPath}"`);
+    return execDotnet(`ef migrations add "${migrationname}" -p "${projectPath}"`);
 }
 
 /**
@@ -102,7 +102,7 @@ export async function dotnetEfAddMigration(projectPath: string, migrationname: s
  * Runs `dotnet ef migration remove -p <projectPath>`
  */
 export async function dotnetEfRemoveMigration(projectPath: string) {
-	return execDotnet(`ef migrations remove -p "${projectPath}"`);
+    return execDotnet(`ef migrations remove -p "${projectPath}"`);
 }
 
 /**
@@ -111,7 +111,7 @@ export async function dotnetEfRemoveMigration(projectPath: string) {
  * Runs `dotnet ef migrations list -p <projectPath>`
  */
 export async function dotnetEfMigrationsList(projectPath: string) {
-	return execDotnet(`ef migrations list -p "${projectPath}"`);
+    return execDotnet(`ef migrations list -p "${projectPath}"`);
 }
 
 /**
@@ -120,12 +120,12 @@ export async function dotnetEfMigrationsList(projectPath: string) {
  * Runs `dotnet ef database update <migrationname> -p <projectPath>`
  */
 export async function dotnetEfUpdateDatabase(projectPath: string, migrationname: string | undefined) {
-	if (!migrationname) {
-		return execDotnet(`ef database update -p "${projectPath}"`);
-	}
-	else {
-		return execDotnet(`ef database update "${migrationname}" -p "${projectPath}"`);
-	}
+    if (!migrationname) {
+        return execDotnet(`ef database update -p "${projectPath}"`);
+    }
+    else {
+        return execDotnet(`ef database update "${migrationname}" -p "${projectPath}"`);
+    }
 }
 
 /**
@@ -134,7 +134,7 @@ export async function dotnetEfUpdateDatabase(projectPath: string, migrationname:
  * Runs `dotnet ef dbcontext info -p <projectPath>`
  */
 export async function dotnetEfDbContextInfo(projectPath: string) {
-	return await execDotnet(`ef dbcontext info -p "${projectPath}"`);
+    return await execDotnet(`ef dbcontext info -p "${projectPath}"`);
 }
 
 /**
@@ -143,16 +143,16 @@ export async function dotnetEfDbContextInfo(projectPath: string) {
  * Runs `dotnet new --list`
  */
 export async function dotnetNewList() {
-	const output = await execDotnet("new --list");
-	var index = output.findIndex(el => el.startsWith("------------------"));
-	return output.slice(index + 1, -1)
-		// filter out empty lines from output
-		.filter(el => el != "")
-		.map((el) => {
-			// split by at least 3 whitespaces into columns
-			const columns = el.split(/\s\s\s+/);
-			return new Template(columns[0], columns[1], columns[2]);
-		});
+    const output = await execDotnet("new --list");
+    var index = output.findIndex(el => el.startsWith("------------------"));
+    return output.slice(index + 1, -1)
+        // filter out empty lines from output
+        .filter(el => el != "")
+        .map((el) => {
+            // split by at least 3 whitespaces into columns
+            const columns = el.split(/\s\s\s+/);
+            return new Template(columns[0], columns[1], columns[2]);
+        });
 }
 
 /**
@@ -161,22 +161,22 @@ export async function dotnetNewList() {
  * Runs `dotnet new <template> -n <name> -o <output>`
  */
 export async function dotnetNew(template: string, name: string, output: string) {
-	return execDotnet(`new "${template}" -n "${name}" -o "${output}"`);
+    return execDotnet(`new "${template}" -n "${name}" -o "${output}"`);
 }
 
 /**
  * Executes the dotnet command and returns the stdout separated by line
  * @param command subcommand and arguments
  */
-async function execDotnet(command: string) : Promise<string[]> {
-	try {
-		const { stdout, stderr } = await exec(`dotnet ${command}`);
-		if(stdout) {
-			return stdout.toString('utf8').split(/\r?\n/);
-		} else {
-			return [];
-		}
-	} catch(e) {
-		throw e.message + e.stdout;
-	}
+async function execDotnet(command: string): Promise<string[]> {
+    try {
+        const { stdout, stderr } = await exec(`dotnet ${command}`);
+        if (stdout) {
+            return stdout.toString('utf8').split(/\r?\n/);
+        } else {
+            return [];
+        }
+    } catch (e) {
+        throw e.message + e.stdout;
+    }
 }
