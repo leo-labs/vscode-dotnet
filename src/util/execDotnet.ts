@@ -4,7 +4,7 @@ import { exec, spawn } from 'promisify-child-process';
 /**
  * Runs `dotnet sln <solutionPath> list` to list projects referenced by the solution
  */
-export async function dotnetSlnList(solutionPath: string) : Promise<string[]> {
+export async function dotnetSlnList(solutionPath: string): Promise<string[]> {
     const output = await execDotnet(`sln "${solutionPath}" list`);
     return output.slice(2, -1);
 }
@@ -35,7 +35,7 @@ export async function dotnetListPackages(projectPath: string) {
     return output.filter(el => el.includes(">")).map(el => {
         // split by whitespaces into columns
         const columns = el.split(/\s+/);
-        return ({ label: columns[2], description: columns.slice(-2)[0]});
+        return ({ label: columns[2], description: columns.slice(-2)[0] });
     });
 }
 
@@ -73,7 +73,7 @@ export async function dotnetRemovePackage(projectPath: string, packageId: string
  * Add a project-to-project reference to a project
  * 
  * Runs `dotnet add <projectPath> reference <projectPath>`  
- */ 
+ */
 export async function dotnetAddReference(projectPath: string, referenceProjectPath: string) {
     return execDotnet(`add "${projectPath}" reference "${referenceProjectPath}"`);
 }
@@ -85,6 +85,56 @@ export async function dotnetAddReference(projectPath: string, referenceProjectPa
  */
 export async function dotnetRemoveReference(projectPath: string, referenceProjectPath: string) {
     return execDotnet(`remove "${projectPath}" reference "${referenceProjectPath}"`);
+}
+
+/**
+ * EF - Add a migration
+ * 
+ * Runs `dotnet ef migration add <migrationname> -p <projectPath>`
+ */
+export async function dotnetEfAddMigration(projectPath: string, migrationname: string) {
+    return execDotnet(`ef migrations add "${migrationname}" -p "${projectPath}"`);
+}
+
+/**
+ * EF - Remove last migration
+ * 
+ * Runs `dotnet ef migration remove -p <projectPath>`
+ */
+export async function dotnetEfRemoveMigration(projectPath: string) {
+    return execDotnet(`ef migrations remove -p "${projectPath}"`);
+}
+
+/**
+ * EF - Show list of migrations
+ * 
+ * Runs `dotnet ef migrations list -p <projectPath>`
+ */
+export async function dotnetEfMigrationsList(projectPath: string) {
+    return execDotnet(`ef migrations list -p "${projectPath}"`);
+}
+
+/**
+ * EF - Update database
+ * 
+ * Runs `dotnet ef database update <migrationname> -p <projectPath>`
+ */
+export async function dotnetEfUpdateDatabase(projectPath: string, migrationname: string | undefined) {
+    if (!migrationname) {
+        return execDotnet(`ef database update -p "${projectPath}"`);
+    }
+    else {
+        return execDotnet(`ef database update "${migrationname}" -p "${projectPath}"`);
+    }
+}
+
+/**
+ * EF - DBContext Info
+ * 
+ * Runs `dotnet ef dbcontext info -p <projectPath>`
+ */
+export async function dotnetEfDbContextInfo(projectPath: string) {
+    return await execDotnet(`ef dbcontext info -p "${projectPath}"`);
 }
 
 /**
@@ -102,7 +152,7 @@ export async function dotnetNewList() {
             // split by at least 3 whitespaces into columns
             const columns = el.split(/\s\s\s+/);
             return new Template(columns[0], columns[1], columns[2]);
-    });
+        });
 }
 
 /**
@@ -118,15 +168,15 @@ export async function dotnetNew(template: string, name: string, output: string) 
  * Executes the dotnet command and returns the stdout separated by line
  * @param command subcommand and arguments
  */
-async function execDotnet(command: string) : Promise<string[]> {
+async function execDotnet(command: string): Promise<string[]> {
     try {
         const { stdout, stderr } = await exec(`dotnet ${command}`);
-        if(stdout) {
+        if (stdout) {
             return stdout.toString('utf8').split(/\r?\n/);
         } else {
             return [];
         }
-    } catch(e) {
+    } catch (e) {
         throw e.message + e.stdout;
     }
 }

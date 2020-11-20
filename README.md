@@ -3,9 +3,9 @@
 
 # dotnet, A Visual Studio Code extension
 
-A modern interface to the dotnet cli for Visual Studio Code.
+A modern interface to the dotnet & Entity Framework Core CLI for Visual Studio Code.
 
-This extension provides access to the dotnet cli by using the Quick Pick UI. 
+This extension provides access to the dotnet & EF CLI by using the Quick Pick UI. 
 
 ## Usage
 
@@ -30,3 +30,12 @@ This extension provides access to the dotnet cli by using the Quick Pick UI.
 
 * Add/Remove projects to/from solutions (`dotnet sln add`, `dotnet sln remove`) 
 
+### Entity Framework Core
+
+* Add/Remove migrations (`dotnet ef migrations add`, `dotnet ef migrations remove`) 
+
+* List migrations (`dotnet ef migrations list`) 
+ 
+* Update database (`dotnet ef database update`) 
+  
+* Show dbcontext info (`dotnet ef dbcontext info`) 

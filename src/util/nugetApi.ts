@@ -59,6 +59,6 @@ export async function queryPackageMetadata(packageId: string) {
 
     var data = response.data.data[0];
 
-    return new PackageMetadata(data.verified, data.versions.slice(-1)[0].version, data.description, 
+    return new PackageMetadata(data.verified, data.versions.slice(-1)[0].version, data.description,
         data.authors, data.totalDownloads);
 }
