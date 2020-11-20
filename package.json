@@ -30,7 +30,13 @@
 		"onCommand:extension.dotnet.remove.reference",
 		"onCommand:extension.dotnet.sln.add",
 		"onCommand:extension.dotnet.sln.remove",
-		"onCommand:extension.dotnet.new"
+		"onCommand:extension.dotnet.new",
+		"onCommand:extension.dotnet.ef.migrations.add",
+		"onCommand:extension.dotnet.ef.migrations.remove",
+		"onCommand:extension.dotnet.ef.migrations.list",
+		"onCommand:extension.dotnet.ef.database.update",
+		"onCommand:extension.dotnet.ef.dbcontext.info"
+
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -62,6 +68,26 @@
 			{
 				"command": "extension.dotnet.new",
 				"title": "dotnet new"
+			},
+			{
+				"command": "extension.dotnet.ef.migrations.add",
+				"title": "dotnet ef migrations add"
+			},
+			{
+				"command": "extension.dotnet.ef.migrations.remove",
+				"title": "dotnet ef migrations remove"
+			},
+			{
+				"command": "extension.dotnet.ef.migrations.list",
+				"title": "dotnet ef migrations list"
+			},
+			{
+				"command": "extension.dotnet.ef.database.update",
+				"title": "dotnet ef database update"
+			},
+			{
+				"command": "extension.dotnet.ef.dbcontext.info",
+				"title": "dotnet ef dbcontext info"
 			}
 		]
 	},
