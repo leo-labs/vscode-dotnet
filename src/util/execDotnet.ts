@@ -99,8 +99,8 @@ export async function dotnetNewList() {
         // filter out empty lines from output
         .filter(el => el != "")
         .map((el) => {
-            // split by at least 3 whitespaces into columns
-            const columns = el.split(/\s\s\s+/);
+            // split by at least 2 whitespaces into columns
+            const columns = el.split(/\s\s+/);
             return new Template(columns[0], columns[1], columns[2]);
     });
 }
